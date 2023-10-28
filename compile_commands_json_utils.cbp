@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="compile_command_json_utils" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="compile_commands_json_use_symlink">
+				<Option output="bin/compile_commands_json_use_symlink" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/compile_commands_json_use_symlink/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="compile_commands_json_use_symlink.cpp" />
+		<Unit filename="nlohmann/json.hpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
