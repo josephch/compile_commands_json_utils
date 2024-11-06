@@ -20,7 +20,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="compile_commands_json_use_symlink.cpp" />
+		<Unit filename="compile_commands_json_utils.cpp" />
 		<Unit filename="nlohmann/json.hpp" />
 		<Extensions />
 	</Project>
