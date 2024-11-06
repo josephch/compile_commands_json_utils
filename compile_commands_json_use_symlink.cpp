@@ -47,10 +47,12 @@ static inline void json_item_substitute_file_path_symlink_path(nlohmann::json& i
 			item["file"] = symlink_fullpath + g_file_separator + realpath_current_str.substr(realpath_sym.length());
 		} else {
 			std::cerr << "No match. full_path : " << full_path << " realpath_current_str : " << realpath_current_str
-					  << std::endl;
+					  << "realpath_sym : " << realpath_sym << std::endl;
 		}
 	}
 }
+
+int compile_commands_substitute_symlink(nlohmann::json& json, std::string symlink);
 
 int main(int argc, char* argv[]) {
 	if (argc < 4) {
@@ -60,17 +62,6 @@ int main(int argc, char* argv[]) {
 	const std::string input = argv[1];
 	const std::string output = argv[2];
 
-	const char* symlink_cstr = argv[3];
-	size_t symlink_start = 0;
-	size_t symlink_end = strlen(symlink_cstr);
-	if (symlink_cstr[0] == '.' && symlink_cstr[1] == '/') {
-		symlink_start = 2;
-	}
-	if (symlink_cstr[symlink_end - 1] == '/') {
-		symlink_end--;
-	}
-	std::string symlink{argv[3], symlink_start, symlink_end};
-
 	std::ifstream inputFile(input);
 	if (!inputFile.good()) {
 		std::cerr << "Could not open json file : " << input << std::endl;
@@ -79,6 +70,27 @@ int main(int argc, char* argv[]) {
 
 	nlohmann::json json;
 	inputFile >> json;
+
+	if (0 != compile_commands_substitute_symlink(json, argv[3])) {
+		std::cerr << "compile_commands_substitute_symlink failed : " << std::endl;
+		return -1;
+	}
+
+	std::ofstream out_file(output);
+	out_file << std::setw(4) << json << std::endl;
+	return 0;
+}
+
+int compile_commands_substitute_symlink(nlohmann::json& json, std::string symlink_in) {
+	size_t symlink_start = 0;
+	size_t symlink_end = symlink_in.size();
+	if (symlink_in[0] == '.' && symlink_in[1] == '/') {
+		symlink_start = 2;
+	}
+	if (symlink_in[symlink_end - 1] == '/') {
+		symlink_end--;
+	}
+	std::string symlink{symlink_in, symlink_start, symlink_end};
 
 	std::string symlink_fullpath;
 	if (symlink.front() != g_file_separator) {
@@ -113,8 +125,5 @@ int main(int argc, char* argv[]) {
 		}
 		// std::cout << std::setw(4) << item << std::endl << std::endl;
 	}
-
-	std::ofstream out_file(output);
-	out_file << std::setw(4) << json << std::endl;
 	return 0;
 }
