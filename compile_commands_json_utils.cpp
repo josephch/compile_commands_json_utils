@@ -103,7 +103,6 @@ int compile_commands_substitute_symlink(nlohmann::json& json, std::string symlin
 	} else {
 		symlink_fullpath = symlink;
 	}
-	std::cout << "symlink_fullpath : " << symlink_fullpath << std::endl;
 
 	char realpath_sym[PATH_MAX];
 	int realpath_sym_len = readlink(symlink_fullpath.c_str(), realpath_sym, sizeof(realpath_sym));
@@ -112,12 +111,14 @@ int compile_commands_substitute_symlink(nlohmann::json& json, std::string symlin
 		return -1;
 	}
 	realpath_sym[realpath_sym_len] = 0;
+	std::cout << "symlink : [" << symlink << "] symlink_fullpath : [" << symlink_fullpath << "]" << " realpath_sym : [" << realpath_sym << "]\n";
 
 	for (nlohmann::json& item : json) {
 		// std::cout << std::setw(4) << item << std::endl << std::endl;
 		const std::string& file = item["file"];
 		if (file.rfind(realpath_sym, 0) == 0) {
-			item["file"] = symlink_fullpath + g_file_separator + file.substr(realpath_sym_len);
+			assert(file.at(realpath_sym_len) == g_file_separator);
+			item["file"] = symlink_fullpath + file.substr(realpath_sym_len);
 		} else if (file.at(0) != g_file_separator) {
 			json_item_substitute_file_path_symlink_path(item, realpath_sym, symlink_fullpath);
 		} else {
